@@ -10,6 +10,11 @@ Tools & Tech
   <li>VS Code</li>
 </ul>
 
+Projects: 
+<ul>
+  <li><a href="https://angelgarcia465.github.io/angelgarcia465/sonar/">Active Sonar</a>: a browser-based sonar simulator with signal processing, target detection, and tracking (<a href="sonar/">source</a>)</li>
+</ul>
+
 About Me: 
 <ul>
   <li>I rely on energy drinks...like alot (I drink them in moderation, don't worry)</li>
