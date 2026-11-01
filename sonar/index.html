@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Active Sonar</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>ACTIVE SONAR <span>// scanning</span></h1>
+      <div class="status">
+        <span>SIM <b id="clock">00:00:00</b></span>
+        <span>CONTACTS <b id="contact-count">0</b></span>
+      </div>
+    </header>
+
+    <main>
+      <section class="scope">
+        <canvas id="ppi" aria-label="Sonar plan position display"></canvas>
+        <p class="hint">Click the display to drop a new contact into the water.</p>
+        <div class="panel ascan-panel">
+          <h2>A-scan <small>matched-filter output vs CFAR threshold, current beam</small></h2>
+          <canvas id="ascan"></canvas>
+        </div>
+      </section>
+
+      <aside>
+        <div class="panel">
+          <h2>Controls</h2>
+          <label>Range scale
+            <select id="range">
+              <option value="500">500 m</option>
+              <option value="1000" selected>1000 m</option>
+              <option value="1500">1500 m</option>
+            </select>
+          </label>
+          <label>Ambient noise <output id="noise-out"></output>
+            <input id="noise" type="range" min="55" max="95" value="72" />
+          </label>
+          <label>Ping rate <output id="sweep-out"></output>
+            <input id="sweep" type="range" min="10" max="80" value="40" />
+          </label>
+          <label>Time scale <output id="timescale-out"></output>
+            <input id="timescale" type="range" min="1" max="10" value="1" />
+          </label>
+          <label>False-alarm rate (CFAR)
+            <select id="pfa">
+              <option value="1e-3">1e-3 (sensitive)</option>
+              <option value="1e-4">1e-4</option>
+              <option value="1e-5" selected>1e-5</option>
+              <option value="1e-6">1e-6 (conservative)</option>
+            </select>
+          </label>
+          <div class="toggles">
+            <label class="check"><input id="truth" type="checkbox" /> Show ground truth</label>
+            <label class="check"><input id="audio" type="checkbox" /> Audio</label>
+          </div>
+          <div class="buttons">
+            <button id="pause">Pause</button>
+            <button id="reset">New scenario</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Contacts</h2>
+          <table>
+            <thead>
+              <tr><th>ID</th><th>BRG</th><th>RNG</th><th>CRS</th><th>SPD</th><th>SNR</th></tr>
+            </thead>
+            <tbody id="contacts"></tbody>
+          </table>
+        </div>
+
+        <details class="panel about">
+          <summary>How it works</summary>
+          <ol>
+            <li><b>Transmit</b> a 20 ms linear-FM chirp (2 kHz bandwidth) on a 6° rotating beam.</li>
+            <li><b>Propagate</b> using the sonar equation: spreading + absorption loss, target strength, beam pattern, Doppler, volume reverberation and ambient noise.</li>
+            <li><b>Pulse-compress</b> the echo with a Hann-weighted matched filter (0.4 m range resolution, ~15 dB gain).</li>
+            <li><b>Detect</b> with a cell-averaging CFAR that adapts the threshold to the local background.</li>
+            <li><b>Track</b>: cluster detections each scan, associate by nearest neighbour, smooth with an α-β filter, confirm after 4 hits.</li>
+          </ol>
+          <p>The scan is time-compressed so the display stays lively; target motion runs in real time (× time scale).</p>
+        </details>
+      </aside>
+    </main>
+
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
