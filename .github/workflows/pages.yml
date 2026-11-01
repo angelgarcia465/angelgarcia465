@@ -1,0 +1,55 @@
+name: Sonar – test & deploy to Pages
+
+on:
+  push:
+    branches: [main]
+    paths: ['sonar/**', '.github/workflows/pages.yml']
+  pull_request:
+    paths: ['sonar/**', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+        working-directory: sonar
+
+  build:
+    needs: test
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble site
+        run: |
+          mkdir -p _site/sonar
+          cp -r sonar/index.html sonar/styles.css sonar/src _site/sonar/
+          printf '<!doctype html><meta http-equiv="refresh" content="0; url=sonar/"><a href="sonar/">Sonar</a>\n' > _site/index.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}sonar/
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
