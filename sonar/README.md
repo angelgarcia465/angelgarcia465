@@ -5,6 +5,8 @@ simulated hydrophone data, from waveform to tracked contacts, and draws it on
 a classic PPI display. It's plain HTML, CSS and JavaScript (ES modules) with no
 dependencies.
 
+**Live demo:** https://angelgarcia465.github.io/angelgarcia465/sonar/
+
 ## Run it
 
 ```sh
